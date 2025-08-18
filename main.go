@@ -32,6 +32,7 @@ func main() {
 	cmdRegistry.register("login", handlerLogin)
 	cmdRegistry.register("users", handlerUsers)
 	cmdRegistry.register("agg", handlerAgg)
+	cmdRegistry.register("addfeed", handlerAddFeed)
 	
 	client := NewClient(time.Second * 10)
 	cliState.client = &client

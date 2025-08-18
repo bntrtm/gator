@@ -82,3 +82,32 @@ func handlerAgg(s *state, cmd command) error {
 	fmt.Println(rssFeed)
 	return nil
 }
+
+func handlerAddFeed(s *state, cmd command) error {
+	if len(cmd.args) < 2 {
+		err := errors.New("ERROR: Not enough arguments")
+		return err
+	}
+	feedName := cmd.args[0]
+	feedUrl := cmd.args[1]
+	username := s.config.Username
+	user, err := s.db.GetUser(context.Background(), username)
+	if err != nil {
+		err = errors.New(fmt.Sprintf("ERROR: User '%s' is not logged in", username))
+		return err
+	}
+	params := database.CreateFeedParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name:      feedName,
+		Url:       feedUrl,
+		UserID:    user.ID,
+	}
+	feed, err := s.db.CreateFeed(context.Background(), params)
+	if err != nil {
+		return err
+	}
+	fmt.Println(feed)
+	return nil
+}
