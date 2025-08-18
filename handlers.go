@@ -111,3 +111,22 @@ func handlerAddFeed(s *state, cmd command) error {
 	fmt.Println(feed)
 	return nil
 }
+
+func handlerFeeds(s *state, cmd command) error {
+		feeds, err := s.db.ListFeeds(context.Background())
+		if err != nil {
+			return err
+		}
+		for i, feed := range feeds {
+			fmt.Println(fmt.Sprintf("FEED #%d:", i + 1))
+			output := fmt.Sprintf("%-12s %s\n", "\tName:", feed.Name)
+			output += fmt.Sprintf("%-12s %s\n", "\tURL:", feed.Url)
+			createdByUser, err := s.db.GetUserByID(context.Background(), feed.UserID)
+			if err != nil {
+				return err
+			}
+			output += fmt.Sprintf("%-12s %s\n", "\tCreated by:", createdByUser.Name)
+			fmt.Println(output)
+		}
+		return nil
+	}
