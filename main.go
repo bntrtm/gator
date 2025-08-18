@@ -4,6 +4,7 @@ import (
 	_ "github.com/lib/pq"
 	"fmt"
 	"os"
+	"time"
 	"database/sql"
 
 	"github.com/bntrtm/gator/internal/config"
@@ -31,6 +32,9 @@ func main() {
 	cmdRegistry.register("login", handlerLogin)
 	cmdRegistry.register("users", handlerUsers)
 	
+	client := NewClient(time.Second * 10)
+	cliState.client = &client
+
 	args := os.Args
 	if len(args) < 2 {
 		fmt.Println("ERROR: Not enough arguments")

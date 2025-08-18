@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-
 	"github.com/bntrtm/gator/internal/config"
 	"github.com/bntrtm/gator/internal/database"
 )
@@ -11,7 +10,7 @@ import (
 type state struct {
 	db *database.Queries
 	config *config.Config
-
+	client *Client
 }
 
 type command struct {
