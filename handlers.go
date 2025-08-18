@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/bntrtm/gator/internal/database"
+	"github.com/bntrtm/gator/internal/rss"
 )
 
 func handlerLogin(s *state, cmd command) error {
@@ -70,5 +71,14 @@ func handlerReset(s *state, cmd command) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func handlerAgg(s *state, cmd command) error {
+	rssFeed, err := rss.FetchFeed(s.client.httpClient, context.Background(), "https://www.wagslane.dev/index.xml")
+	if err != nil {
+		return err
+	}
+	fmt.Println(rssFeed)
 	return nil
 }
