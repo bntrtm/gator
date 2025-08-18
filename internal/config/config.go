@@ -39,8 +39,8 @@ func Read() Config {
 	return config
 }
 
-func (c *Config) SetUser(usrN string) {
-	c.Username = usrN
+func (c *Config) SetUser(username string) {
+	c.Username = username
 	jsonData, err := json.MarshalIndent(c, "", " \t")
 	if err != nil {
 		fmt.Println("Error: ", err)

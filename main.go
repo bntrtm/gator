@@ -1,20 +1,35 @@
 package main
 
 import (
+	_ "github.com/lib/pq"
 	"fmt"
 	"os"
+	"database/sql"
 
 	"github.com/bntrtm/gator/internal/config"
+	"github.com/bntrtm/gator/internal/database"
 )
 
 func main() {
 	cliState := state{}
 	cfg := config.Read()
 	cliState.config = &cfg
+	db, err := sql.Open("postgres", cliState.config.DatabaseURL)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	dbQueries := database.New(db)
+	cliState.db = dbQueries
+
 	cmdRegistry := commands{
 		handlers: make(map[string]func(*state, command) error),
+	
 	}
+	cmdRegistry.register("reset", handlerReset)
+	cmdRegistry.register("register", handlerRegister)
 	cmdRegistry.register("login", handlerLogin)
+	cmdRegistry.register("users", handlerUsers)
 	
 	args := os.Args
 	if len(args) < 2 {
@@ -23,7 +38,7 @@ func main() {
 	}
 	args = args[1:]
 	command := command{name: args[0], args: args[1:]}
-	err := cmdRegistry.run(&cliState, command)
+	err = cmdRegistry.run(&cliState, command)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
