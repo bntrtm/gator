@@ -83,7 +83,7 @@ func handlerAgg(s *state, cmd command) error {
 	return nil
 }
 
-func handlerAddFeed(s *state, cmd command) error {
+func handlerAddFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.args) < 2 {
 		err := errors.New("ERROR: Not enough arguments")
 		return err
@@ -91,11 +91,7 @@ func handlerAddFeed(s *state, cmd command) error {
 	feedName := cmd.args[0]
 	feedUrl := cmd.args[1]
 	username := s.config.Username
-	user, err := s.db.GetUser(context.Background(), username)
-	if err != nil {
-		err = errors.New(fmt.Sprintf("ERROR: User '%s' is not logged in", username))
-		return err
-	}
+
 	feedParams := database.CreateFeedParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now(),
@@ -124,18 +120,14 @@ func handlerAddFeed(s *state, cmd command) error {
 	return nil
 }
 
-func handlerFollow(s *state, cmd command) error {
+func handlerFollow(s *state, cmd command, user database.User) error {
 	if len(cmd.args[0]) == 0 {
 		err := errors.New("ERROR: Write feed name to follow")
 		return err
 	}
 	url := cmd.args[0]
 	username := s.config.Username
-	user, err := s.db.GetUser(context.Background(), username)
-	if err != nil {
-		err = errors.New(fmt.Sprintf("ERROR: User '%s' is not logged in", username))
-		return err
-	}
+
 	feed, err := s.db.GetFeedByURL(context.Background(), url)
 	if err != nil {
 		return err
@@ -152,13 +144,9 @@ func handlerFollow(s *state, cmd command) error {
 	return nil
 }
 
-func handlerFollowing(s *state, cmd command) error {
+func handlerFollowing(s *state, cmd command, user database.User) error {
 	username := s.config.Username
-	user, err := s.db.GetUser(context.Background(), username)
-	if err != nil {
-		err = errors.New(fmt.Sprintf("ERROR: User '%s' is not logged in", username))
-		return err
-	}
+
 	feeds, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
 		return err

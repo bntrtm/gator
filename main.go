@@ -32,10 +32,10 @@ func main() {
 	cmdRegistry.register("login", handlerLogin)
 	cmdRegistry.register("users", handlerUsers)
 	cmdRegistry.register("agg", handlerAgg)
-	cmdRegistry.register("addfeed", handlerAddFeed)
+	cmdRegistry.register("addfeed", middlewareLoggedIn(handlerAddFeed))
 	cmdRegistry.register("feeds", handlerFeeds)
-	cmdRegistry.register("follow", handlerFollow)
-	cmdRegistry.register("following", handlerFollowing)
+	cmdRegistry.register("follow", middlewareLoggedIn(handlerFollow))
+	cmdRegistry.register("following", middlewareLoggedIn(handlerFollowing))
 	
 	client := NewClient(time.Second * 10)
 	cliState.client = &client
