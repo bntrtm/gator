@@ -144,6 +144,24 @@ func handlerFollow(s *state, cmd command, user database.User) error {
 	return nil
 }
 
+func handlerUnfollow(s *state, cmd command, user database.User) error {
+	if len(cmd.args[0]) == 0 {
+		err := errors.New("ERROR: Write feed name to follow")
+		return err
+	}
+	url := cmd.args[0]
+
+	params := database.DelFeedFollowParams{
+		Name:	s.config.Username,
+		Url:	url,
+	}
+	err := s.db.DelFeedFollow(context.Background(), params)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func handlerFollowing(s *state, cmd command, user database.User) error {
 	username := s.config.Username
 

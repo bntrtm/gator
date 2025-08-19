@@ -35,7 +35,9 @@ func main() {
 	cmdRegistry.register("addfeed", middlewareLoggedIn(handlerAddFeed))
 	cmdRegistry.register("feeds", handlerFeeds)
 	cmdRegistry.register("follow", middlewareLoggedIn(handlerFollow))
+	cmdRegistry.register("unfollow", middlewareLoggedIn(handlerUnfollow))
 	cmdRegistry.register("following", middlewareLoggedIn(handlerFollowing))
+	
 	
 	client := NewClient(time.Second * 10)
 	cliState.client = &client
