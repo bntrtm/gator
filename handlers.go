@@ -121,8 +121,8 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 }
 
 func handlerFollow(s *state, cmd command, user database.User) error {
-	if len(cmd.args[0]) == 0 {
-		err := errors.New("ERROR: Write feed name to follow")
+	if len(cmd.args) == 0 {
+		err := errors.New("ERROR: Write feed url to follow")
 		return err
 	}
 	url := cmd.args[0]
@@ -145,8 +145,8 @@ func handlerFollow(s *state, cmd command, user database.User) error {
 }
 
 func handlerUnfollow(s *state, cmd command, user database.User) error {
-	if len(cmd.args[0]) == 0 {
-		err := errors.New("ERROR: Write feed name to follow")
+	if len(cmd.args) == 0 {
+		err := errors.New("ERROR: Write feed url to unfollow")
 		return err
 	}
 	url := cmd.args[0]
