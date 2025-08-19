@@ -2,6 +2,7 @@ package rss
 
 import (
 	"io"
+	"fmt"
 	"html"
 	"context"
 	"net/http"
@@ -15,6 +16,13 @@ type RSSFeed struct {
 		Description string    `xml:"description"`
 		Item        []RSSItem `xml:"item"`
 	} `xml:"channel"`
+}
+
+func(r *RSSFeed) PrintItems() {
+	for _, item := range r.Channel.Item {
+		fmt.Println(item.Title)
+	}
+	return
 }
 
 type RSSItem struct {

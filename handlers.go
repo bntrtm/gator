@@ -8,7 +8,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/bntrtm/gator/internal/database"
-	"github.com/bntrtm/gator/internal/rss"
 )
 
 func handlerLogin(s *state, cmd command) error {
@@ -75,11 +74,20 @@ func handlerReset(s *state, cmd command) error {
 }
 
 func handlerAgg(s *state, cmd command) error {
-	rssFeed, err := rss.FetchFeed(s.client.httpClient, context.Background(), "https://www.wagslane.dev/index.xml")
+	if len(cmd.args) == 0 {
+		err := errors.New("ERROR: No duration argument provided (EX: 1s? 1m? 1h?)")
+		return err
+	}
+	timeBetweenRequests, err := time.ParseDuration(cmd.args[0])
 	if err != nil {
 		return err
 	}
-	fmt.Println(rssFeed)
+
+	ticker := time.NewTicker(timeBetweenRequests)
+	for ; ; <-ticker.C {
+		ScrapeFeeds(s)
+	}
+
 	return nil
 }
 

@@ -3,8 +3,10 @@ package main
 import (
 	"errors"
 	"fmt"
+	"context"
 	"github.com/bntrtm/gator/internal/config"
 	"github.com/bntrtm/gator/internal/database"
+	"github.com/bntrtm/gator/internal/rss"
 )
 
 type state struct {
@@ -39,3 +41,19 @@ func (c *commands) register(name string, f func(*state, command) error) {
 	return
 }
 
+func ScrapeFeeds(s *state) error {
+	feedToFetch, err := s.db.GetNextFeedToFetch(context.Background())
+	if err != nil {
+		return err
+	}
+	err = s.db.MarkFeedFetched(context.Background(), feedToFetch.ID)
+	if err != nil {
+		return err
+	}
+	feed, err := rss.FetchFeed(s.client.httpClient, context.Background(), feedToFetch.Url)
+	if err != nil {
+		return err
+	}
+	feed.PrintItems()
+	return nil
+}
