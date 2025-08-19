@@ -96,7 +96,7 @@ func handlerAddFeed(s *state, cmd command) error {
 		err = errors.New(fmt.Sprintf("ERROR: User '%s' is not logged in", username))
 		return err
 	}
-	params := database.CreateFeedParams{
+	feedParams := database.CreateFeedParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -104,11 +104,73 @@ func handlerAddFeed(s *state, cmd command) error {
 		Url:       feedUrl,
 		UserID:    user.ID,
 	}
-	feed, err := s.db.CreateFeed(context.Background(), params)
+	feed, err := s.db.CreateFeed(context.Background(), feedParams)
 	if err != nil {
 		return err
 	}
-	fmt.Println(feed)
+	fmt.Println(fmt.Sprintf("%s added feed: %s", username, feed.Name))
+	
+	feedFollowParams := database.CreateFeedFollowParams{
+		ID:			uuid.New(),
+		CreatedAt:	time.Now(),
+		UpdatedAt:	time.Now(),
+		UserID:		user.ID,
+		FeedID:		feed.ID,
+	}
+	_, err = s.db.CreateFeedFollow(context.Background(), feedFollowParams)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func handlerFollow(s *state, cmd command) error {
+	if len(cmd.args[0]) == 0 {
+		err := errors.New("ERROR: Write feed name to follow")
+		return err
+	}
+	url := cmd.args[0]
+	username := s.config.Username
+	user, err := s.db.GetUser(context.Background(), username)
+	if err != nil {
+		err = errors.New(fmt.Sprintf("ERROR: User '%s' is not logged in", username))
+		return err
+	}
+	feed, err := s.db.GetFeedByURL(context.Background(), url)
+	if err != nil {
+		return err
+	}
+	params := database.CreateFeedFollowParams{
+		ID: uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID:	   user.ID,
+		FeedID:	   feed.ID,
+	}
+	s.db.CreateFeedFollow(context.Background(), params)
+	fmt.Println(fmt.Sprintf("%s now following feed: %s", username, feed.Name))
+	return nil
+}
+
+func handlerFollowing(s *state, cmd command) error {
+	username := s.config.Username
+	user, err := s.db.GetUser(context.Background(), username)
+	if err != nil {
+		err = errors.New(fmt.Sprintf("ERROR: User '%s' is not logged in", username))
+		return err
+	}
+	feeds, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
+	if err != nil {
+		return err
+	}
+	if len(feeds) == 0 {
+		fmt.Println(fmt.Sprintf("%s is not following any feeds.", username))
+		return nil
+	}
+	fmt.Println(fmt.Sprintf("%s is following the following feeds:", username))
+	for _, feed := range feeds {
+		fmt.Println(fmt.Sprintf(feed.FeedName))
+	}
 	return nil
 }
 
