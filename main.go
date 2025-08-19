@@ -27,7 +27,7 @@ func main() {
 		handlers: make(map[string]func(*state, command) error),
 	
 	}
-	cmdRegistry.register("reset", handlerReset)
+	//cmdRegistry.register("reset", handlerReset)
 	cmdRegistry.register("register", handlerRegister)
 	cmdRegistry.register("login", handlerLogin)
 	cmdRegistry.register("users", handlerUsers)
