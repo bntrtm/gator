@@ -18,6 +18,7 @@ type RSSFeed struct {
 	} `xml:"channel"`
 }
 
+// DEPRECATED
 func(r *RSSFeed) PrintItems() {
 	for _, item := range r.Channel.Item {
 		fmt.Println(item.Title)

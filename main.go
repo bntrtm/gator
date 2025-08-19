@@ -37,6 +37,7 @@ func main() {
 	cmdRegistry.register("follow", middlewareLoggedIn(handlerFollow))
 	cmdRegistry.register("unfollow", middlewareLoggedIn(handlerUnfollow))
 	cmdRegistry.register("following", middlewareLoggedIn(handlerFollowing))
+	cmdRegistry.register("browse", middlewareLoggedIn(handlerBrowse))
 	
 	
 	client := NewClient(time.Second * 10)

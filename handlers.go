@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"context"
 	"time"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/bntrtm/gator/internal/database"
@@ -84,9 +85,15 @@ func handlerAgg(s *state, cmd command) error {
 	}
 
 	ticker := time.NewTicker(timeBetweenRequests)
-	for ; ; <-ticker.C {
-		ScrapeFeeds(s)
+	for {
+		err := ScrapeFeeds(s)
+		if err != nil {
+			// No more feeds to fetch (ideal error)
+			break
+		}
+		<-ticker.C
 	}
+
 
 	return nil
 }
@@ -204,5 +211,36 @@ func handlerFeeds(s *state, cmd command) error {
 			output += fmt.Sprintf("%-12s %s\n", "\tCreated by:", createdByUser.Name)
 			fmt.Println(output)
 		}
+		return nil
+	}
+
+func handlerBrowse(s *state, cmd command, user database.User) error {
+		var limit int32
+		limit = 2
+		if len(cmd.args) > 0 && cmd.args[0] != "" {
+			customLimit, err := strconv.Atoi(cmd.args[0]) // Atoi returns (int, error)
+			if err != nil {
+				fmt.Errorf("invalid limit value:", err)
+			}
+			limit = int32(customLimit)
+		}
+		params := database.GetPostsForUserParams{
+			UserID:	user.ID,
+			Limit:	int32(limit),
+		}
+		posts, err := s.db.GetPostsForUser(context.Background(), params)
+		if err != nil {
+			return fmt.Errorf("couldn't get posts for user: %w", err)
+		}
+
+		fmt.Printf("Found %d posts for user %s:\n", len(posts), user.Name)
+		for _, post := range posts {
+			fmt.Printf("%s from %s\n", post.PublishedAt.Time.Format("Mon Jan 2"), post.FeedName)
+			fmt.Printf("--- %s ---\n", post.Title)
+			fmt.Printf("    %v\n", post.Description.String)
+			fmt.Printf("Link: %s\n", post.Url)
+			fmt.Println("=====================================")
+		}
+		
 		return nil
 	}
