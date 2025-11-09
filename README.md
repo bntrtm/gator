@@ -8,7 +8,7 @@ Users can separate their feeds into more than one "user," tracked within the rel
 ## Requirements
 
 To install the `gator` CLI, you can use: go install github.com/bntrtm/gator
-Gator expects a file be found at the following path: ~/$HOME/.config/gator/.gatorconfig.json.
+Gator expects a file be found at the following path: $HOME/.config/gator/.gatorconfig.json.
 
 ## User Instructions
 
@@ -22,7 +22,7 @@ Gator expects a file be found at the following path: ~/$HOME/.config/gator/.gato
 In this case, the protocol will be `postgres`, and the database `gator`.
 Postgres uses a default port of `5432`.
 
-Fill in remaining fields (username, password) as accordingly.
+Fill in remaining fields (username, password) accordingly.
 
 2. Run the program with any of the following commands:
     - `register $1`: Register a new user `$1`.
